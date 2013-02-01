@@ -9,6 +9,7 @@ ClassDeclWriter: abstract class extends Skeleton {
     CLASS_NAME := static const This LANG_PREFIX + "Class"
 
     write: static func ~_class (this: Skeleton, cDecl: ClassDecl) {
+        if (!cDecl isOutput) return
 
         if(cDecl isMeta) {
 
@@ -86,7 +87,7 @@ ClassDeclWriter: abstract class extends Skeleton {
         // Now write all virtual functions prototypes in the class struct
         for (fDecl in cDecl functions) {
 
-            if(fDecl isExtern()) continue
+            if(!fDecl isVirtual || fDecl isExtern()) continue
 
             if(cDecl getSuperRef() != null) {
                 superDecl : FunctionDecl = null
@@ -139,7 +140,7 @@ ClassDeclWriter: abstract class extends Skeleton {
             if(fDecl isProto()) current app("extern ")
             FunctionDeclWriter writeFuncPrototype(this, fDecl, null)
             current app(';')
-            if(!fDecl isStatic() && !fDecl isAbstract() && !fDecl isFinal()) {
+            if(!fDecl isVirtual() && !fDecl isStatic() && !fDecl isAbstract() && !fDecl isFinal()) {
                 current nl()
                 FunctionDeclWriter writeFuncPrototype(this, fDecl, "_impl")
                 current app(';')
@@ -192,7 +193,7 @@ ClassDeclWriter: abstract class extends Skeleton {
 
         for(fDecl: FunctionDecl in cDecl functions) {
 
-            if (fDecl isStatic() || fDecl isFinal() || fDecl isExternWithName()) {
+            if (!fDecl isVirtual() || fDecl isStatic() || fDecl isFinal() || fDecl isExternWithName()) {
                 continue
             }
 
@@ -225,7 +226,7 @@ ClassDeclWriter: abstract class extends Skeleton {
             }
 
             current nl(). nl()
-            FunctionDeclWriter writeFuncPrototype(this, decl, (decl isFinal()) ? null : "_impl")
+            FunctionDeclWriter writeFuncPrototype(this, decl, (decl isFinal() || !decl isVirtual()) ? null : "_impl")
             current app(' '). openBlock()
             
             if(decl getName() == ClassDecl DEFAULTS_FUNC_NAME) {
@@ -414,11 +415,13 @@ ClassDeclWriter: abstract class extends Skeleton {
 
     writeStructTypedef: static func (this: Skeleton, cDecl: ClassDecl) {
 
-        structName := cDecl underName()
-        if(cDecl getVersion()) VersionWriter writeStart(this, cDecl getVersion())
-        current nl(). app("struct _"). app(structName). app(";")
-        current nl(). app("typedef struct _"). app(structName). app(" "). app(structName). app(";")
-        if(cDecl getVersion()) VersionWriter writeEnd(this)
+        if (cDecl isOutput) {
+            structName := cDecl underName()
+            if(cDecl getVersion()) VersionWriter writeStart(this, cDecl getVersion())
+            current nl(). app("struct _"). app(structName). app(";")
+            current nl(). app("typedef struct _"). app(structName). app(" "). app(structName). app(";")
+            if(cDecl getVersion()) VersionWriter writeEnd(this)
+        }
 
     }
 

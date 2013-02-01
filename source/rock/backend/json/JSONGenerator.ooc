@@ -9,7 +9,7 @@ import ../../middle/[Visitor]
 import ../../middle/[Module, FunctionDecl, FunctionCall, Expression, Type,
     BinaryOp, IntLiteral, CharLiteral, StringLiteral, RangeLiteral,
     VariableDecl, If, Else, While, Foreach, Conditional, ControlStatement,
-    VariableAccess, Include, Import, Use, TypeDecl, ClassDecl, CoverDecl,
+    VariableAccess, Include, Import, Use, TypeDecl, StructDecl, ClassDecl, CoverDecl,
     Node, Parenthesis, Return, Cast, Comparison, Ternary, BoolLiteral,
     Argument, Statement, AddressOf, Dereference, FuncType, BaseType, PropertyDecl,
     EnumDecl, OperatorDecl, InterfaceDecl, InterfaceImpl, Version, TypeList]
@@ -148,6 +148,65 @@ JSONGenerator: class extends Visitor {
         } else {
             obj put("version", null)
         }
+    }
+
+    visitStructDecl: func (node: StructDecl) {
+        if(node isMeta)
+            return
+        obj := HashBag new()
+        putToken(obj, node token)
+        /* `name` */
+        obj put("name", node name as String)
+        /* `version` */
+        putVersion(node verzion, obj)
+        /* `type` */
+        obj put("type", "struct")
+        /* `abstract` */
+        obj put("abstract", node isAbstract)
+        /* `final` */
+        obj put("final", node isFinal)
+         /* `fullName` */
+        obj put("fullName", node underName())
+        /* `tag` */
+        obj put("tag", node name as String)
+        /* `doc` */
+        obj put("doc", node doc)
+        /* `extends` */
+        if(node getSuperRef() != null) {
+            obj put("extends", node getSuperRef() name as String)
+        } else {
+            obj put("extends", null)
+        }
+        /* generic types */
+        genericTypes := Bag new()
+        for(typeArg in node typeArgs) {
+            genericTypes add(typeArg name as String)
+        }
+        obj put("genericTypes", genericTypes)
+        /* `members` */
+        members := Bag new()
+        /* methods */
+        for(function in node meta functions) {
+            member := Bag new()
+            member add(function name) .add(buildFunctionDecl(function, "method"))
+            members add(member)
+        }
+        /* variables */
+        for(variable in node variables) {
+            member := Bag new()
+            member add(variable name) .add(buildVariableDecl(variable, "field"))
+            members add(member)
+        }
+        /* static variables */
+        for(variable in node meta variables) {
+            member := Bag new()
+            member add(variable name) .add(buildVariableDecl(variable, "field"))
+            members add(member)
+        }
+        obj put("members", members)
+        addObject(node name, obj)
+        for(idecl in node getInterfaceDecls())
+            visitInterfaceImpl(idecl)
     }
 
     visitClassDecl: func (node: ClassDecl) {

@@ -10,13 +10,13 @@ import ../../middle/[Module, FunctionDecl, FunctionCall, Expression, Type,
     BinaryOp, IntLiteral, FloatLiteral, CharLiteral, StringLiteral,
     RangeLiteral, NullLiteral, VariableDecl, If, Else, While, Foreach,
     Conditional, ControlStatement, VariableAccess, Include, Import,
-    Use, TypeDecl, ClassDecl, CoverDecl, Node, Parenthesis, Return,
+    Use, TypeDecl, StructDecl, ClassDecl, CoverDecl, Node, Parenthesis, Return,
     Cast, Comparison, Ternary, BoolLiteral, Argument, Statement,
     AddressOf, Dereference, CommaSequence, UnaryOp, ArrayAccess, Match,
     FlowControl, InterfaceDecl, Version, Block, EnumDecl, ArrayLiteral,
     ArrayCreation, StructLiteral, InlineContext, FuncType]
 
-import Skeleton, FunctionDeclWriter, ControlStatementWriter,
+import Skeleton, FunctionDeclWriter, ControlStatementWriter, StructDeclWriter,
     ClassDeclWriter, ModuleWriter, CoverDeclWriter, FunctionCallWriter,
     CastWriter, InterfaceDeclWriter, VersionWriter
 
@@ -221,7 +221,8 @@ CGenerator: class extends Skeleton {
                 refLevel := 0
 
 
-                if(varAcc expr getType() getRef() instanceOf?(ClassDecl)) {
+                varRef := varAcc expr getType() getRef()
+                if(varRef instanceOf?(ClassDecl) || varRef instanceOf?(StructDecl)) {
                     refLevel += 1
                 }
 
@@ -394,6 +395,11 @@ CGenerator: class extends Skeleton {
     /** Write an interface declaration */
     visitInterfaceDecl: func (iDecl: InterfaceDecl) {
         InterfaceDeclWriter write(this, iDecl)
+    }
+
+    /** Write a class declaration */
+    visitStructDecl: func (cDecl: StructDecl) {
+        StructDeclWriter write(this, cDecl)
     }
 
     /** Write a class declaration */

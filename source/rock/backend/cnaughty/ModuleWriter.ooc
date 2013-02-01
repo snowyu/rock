@@ -1,9 +1,9 @@
 import structs/List
 import ../../middle/[Module, Include, Import, TypeDecl, FunctionDecl,
-       CoverDecl, ClassDecl, EnumDecl, OperatorDecl, InterfaceDecl,
+       CoverDecl, StructDecl, ClassDecl, EnumDecl, OperatorDecl, InterfaceDecl,
        VariableDecl, Type, FuncType, Argument, StructLiteral]
 import ../../frontend/BuildParams
-import CoverDeclWriter, ClassDeclWriter, EnumDeclWriter, VersionWriter, Skeleton
+import CoverDeclWriter, StructDeclWriter, ClassDeclWriter, EnumDeclWriter, VersionWriter, Skeleton
 
 ModuleWriter: abstract class extends Skeleton {
 
@@ -123,6 +123,7 @@ ModuleWriter: abstract class extends Skeleton {
         }
 
         // write load function
+        /*
         current = fw
         current nl(). app("void "). app(module getLoadFuncName()). app("();")
         current = cw
@@ -157,6 +158,8 @@ ModuleWriter: abstract class extends Skeleton {
         }
         current untab(). nl(). app("}")
         current untab(). nl(). app("}"). nl()
+        //-------------------------------------
+        */
 
         // write all addons
         for(addon in module addons) {
@@ -180,10 +183,14 @@ ModuleWriter: abstract class extends Skeleton {
         }
 
         for(tDecl in module types) {
+            //if (!tDecl isOutput) continue
             fullName := tDecl getFullName()
             if(tDecl getName() != fullName) {
-                hw nl(). app("#define "). app(tDecl getName()). app(' '). app(fullName)
-                hw nl(). app("#define "). app(tDecl getName()). app("_class() "). app(fullName). app("_class()")
+                if (tDecl isOutput)
+                    hw nl(). app("#define "). app(tDecl getName()). app(' '). app(fullName)
+                if (tDecl isMeta && !tDecl getNonMeta() instanceOf?(StructDecl)) {
+                    hw nl(). app("#define "). app(tDecl getName()). app("_class() "). app(fullName). app("_class()")
+                }
                 for(fDecl in tDecl getFunctions()) {
                     writeFunctionAlias(this, fDecl, tDecl)
                 }
@@ -310,7 +317,7 @@ ModuleWriter: abstract class extends Skeleton {
         if(params enableGC) {
             cw nl(). app("GC_INIT();")
         }
-        cw nl(). app(module getLoadFuncName()). app("();")
+        cw nl(). app("//"). app(module getLoadFuncName()). app("();")
         cw nl(). app("return 0;")
         cw closeBlock(). nl()
     }
@@ -421,7 +428,9 @@ ModuleWriter: abstract class extends Skeleton {
             if(tDecl isMeta != meta) continue
 
             match {
-                case tDecl instanceOf?(ClassDecl) =>
+                case tDecl instanceOf?(StructDecl) =>
+                    StructDeclWriter writeStructTypedef(this, tDecl as StructDecl)
+               case tDecl instanceOf?(ClassDecl) =>
                     ClassDeclWriter writeStructTypedef(this, tDecl as ClassDecl)
                     if(tDecl instanceOf?(InterfaceDecl)) {
                         CoverDeclWriter writeTypedef(this, tDecl as InterfaceDecl getFatType())

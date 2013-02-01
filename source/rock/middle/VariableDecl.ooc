@@ -1,6 +1,6 @@
 import structs/[ArrayList]
 import Type, Declaration, Expression, Visitor, TypeDecl, VariableAccess,
-       Node, ClassDecl, FunctionCall, Argument, BinaryOp, Cast, Module,
+       Node, StructDecl, ClassDecl, FunctionCall, Argument, BinaryOp, Cast, Module,
        Block, Scope, FunctionDecl, Argument, BaseType, FuncType, Statement,
        NullLiteral, Tuple, TypeList, VariableDecl
 import tinker/[Response, Resolver, Trail, Errors]
@@ -288,7 +288,7 @@ VariableDecl: class extends Declaration {
                     res wholeAgain(this, "Need reference.")
                     return Response OK
                 }
-                if (t isPointer() || reference instanceOf?(ClassDecl)) { // Pointer OR object
+                if (t isPointer() || reference instanceOf?(ClassDecl) || reference instanceOf?(StructDecl)) { // Pointer OR object
                     expr = NullLiteral new(token)
                 }
             }
@@ -386,7 +386,16 @@ VariableDecl: class extends Declaration {
                 return false
             }
         }
-        
+        if(lRef instanceOf?(StructDecl) && rRef instanceOf?(StructDecl)) {
+            if(!(
+                (lType equals?(rType)) ||
+                (rRef as StructDecl inheritsFrom?(lRef as StructDecl))
+            )) {
+                "Decl, l = %s, r = %s" printfln(lType toString(), rType toString())
+                return false
+            }
+        }
+         
         return true
     }
         

@@ -64,6 +64,7 @@ FunctionDecl: class extends Declaration {
     isFinal := false
     isProto := false
     isSuper := false
+    isVirtual := true
     externName : String = null
     unmangledName: String = null
 
@@ -164,6 +165,7 @@ FunctionDecl: class extends Declaration {
         copy isFinal = isFinal
         copy isProto = isProto
         copy isSuper = isSuper
+        copy isVirtual = isVirtual
         copy externName = externName
         copy unmangledName = unmangledName
 
@@ -212,6 +214,10 @@ FunctionDecl: class extends Declaration {
 
     isSuper:    func -> Bool { isSuper }
     setSuper:   func (=isSuper) {}
+
+    isVirtual:    func -> Bool { isVirtual }
+    setVirtual:   func (=isVirtual) {}
+
 
     isAnon: func -> Bool { isAnon }
 

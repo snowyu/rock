@@ -9,7 +9,7 @@ import ../../middle/[Visitor]
 import ../../middle/[Module, FunctionDecl, FunctionCall, Expression, Type,
 BinaryOp, IntLiteral, CharLiteral, StringLiteral, RangeLiteral,
 VariableDecl, If, Else, While, Foreach, Conditional, ControlStatement,
-VariableAccess, Include, Import, Use, TypeDecl, ClassDecl, CoverDecl,
+VariableAccess, Include, Import, Use, TypeDecl, StructDecl, ClassDecl, CoverDecl,
 Node, Parenthesis, Return, Cast, Comparison, Ternary, BoolLiteral,
 Argument, Statement, AddressOf, Dereference, FuncType, BaseType, PropertyDecl,
 EnumDecl, OperatorDecl, InterfaceDecl, InterfaceImpl, Version]
@@ -121,6 +121,51 @@ ExplanationGenerator: class extends Visitor {
     }
 
     visitType: func (node: Type) {}
+
+    visitStructDecl: func (node: StructDecl) {
+        if(node isMeta) return
+        addObject("## "+(node name as String)+" struct")
+        addObject()
+
+        addObject("struct attributes:")
+        addObject()
+
+        if (node getSuperRef() != null) addObject("* "+(node name as String)+" **extend**s the "+(node getSuperRef() name as String)+" struct: "+(node name as String)+" inherits the properties and methods of "+(node getSuperRef() name as String)+". *ooc* does **not** support multiple inheritance, meaning one cannot **extend** multiple classes"); addObject()
+        if (node isAbstract) addObject("* "+(node name as String)+" is **abstract**; it cannot be instantiated, though it still can be extended by other classes"); addObject()
+        if (node isFinal) addObject("* "+(node name as String)+" is **final**; it cannot be further extended or subclassed"); addObject()
+        //if (node doc != "") { addObject("* "+(node name as String)+" has attached documentation (/\*\* \*/):"); addObject("    "+node doc); addObject() }
+        if (node typeArgs getSize() > 0) {
+            addObject("* "+(node name as String)+" is a generic class with *"+(node typeArgs getSize() toString())+"* generic type(s). Generic types are placeholders for more specific types a class could operate on. "+(node name as String)+" features the following generic types:"); addObject()
+            node typeArgs each(|typeArg| addObject("    * "+typeArg name as String))
+            addObject()
+        }
+
+        //addObject("class members:")
+        //addObject()
+
+        addObject("* Variables:")
+        addObject()
+        node variables each(|variable|
+            buildVariableDecl(variable, "field")
+            addObject()
+        )
+        addObject("* Methods:")
+        addObject()
+        node meta functions each(|function|
+            buildFunctionDecl(function, "field")
+            addObject()
+        )
+        /* static variables
+        node meta variables each(|variable|
+          member := Bag new()
+          member add(variable name) .add(buildVariableDecl(variable, "field")) // FIXME buildVariableDecl doesn't return anything
+          members add(member)
+        )
+        obj put("members", members)
+        addObject(node name, obj)
+        node getInterfaceDecls() each(|idecl| visitInterfaceImpl(idecl))
+        */
+    }
 
     visitClassDecl: func (node: ClassDecl) {
         if(node isMeta) return

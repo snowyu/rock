@@ -29,6 +29,7 @@ TypeDecl: abstract class extends Declaration {
     // internal state variables
     hasCheckedInheritance := false
     hasCheckedAbstract := false
+    isOutput := true
 
     variables := HashMap<String, VariableDecl> new()
 

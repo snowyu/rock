@@ -1,6 +1,6 @@
 import Node
 
-import Return, ClassDecl, CoverDecl, FunctionDecl, VariableDecl, Type,
+import Return, StructDecl, ClassDecl, CoverDecl, FunctionDecl, VariableDecl, Type,
         Module, If, Else, While, Foreach, RangeLiteral, CharLiteral,
         BoolLiteral, StringLiteral, IntLiteral, FloatLiteral, NullLiteral,
         VariableAccess, FunctionCall, BinaryOp, Parenthesis, Return,
@@ -12,6 +12,7 @@ import Return, ClassDecl, CoverDecl, FunctionDecl, VariableDecl, Type,
 Visitor: abstract class {
 
     visitInterfaceDecl:     func (node: InterfaceDecl) {}
+    visitStructDecl:         func (node: StructDecl) {}
     visitClassDecl:         func (node: ClassDecl) {}
     visitCoverDecl:         func (node: CoverDecl) {}
     visitEnumDecl:          func (node: EnumDecl) {}

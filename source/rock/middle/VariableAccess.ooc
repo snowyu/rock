@@ -1,6 +1,6 @@
 import ../frontend/[Token, BuildParams, AstBuilder], io/File
 import BinaryOp, Visitor, Expression, VariableDecl, FunctionDecl,
-       TypeDecl, Declaration, Type, Node, ClassDecl, NamespaceDecl,
+       TypeDecl, Declaration, Type, Node, StructDecl, ClassDecl, NamespaceDecl,
        EnumDecl, PropertyDecl, FunctionCall, Module, Import, FuncType,
        NullLiteral, AddressOf, BaseType, StructLiteral, Return,
        Argument, InlineContext, Scope, CoverDecl, StringLiteral
@@ -160,12 +160,13 @@ VariableAccess: class extends Expression {
             //printf("Resolved expr, type = %s\n", expr getType() ? expr getType() toString() : "(nil)")
         }
 
-        if(expr && name == "class") {
+        if(expr && (name == "class" || name == "struct")) {
             if(expr getType() == null || expr getType() getRef() == null) {
                 res wholeAgain(this, "expr type or expr type ref is null")
                 return Response OK
             }
-            if(!expr getType() getRef() instanceOf?(ClassDecl)) {
+            vRef := expr getType() getRef()
+            if(!vRef instanceOf?(ClassDecl) && !vRef instanceOf?(StructDecl)) {
                 name = expr getType() getName()
                 ref = expr getType() getRef()
                 expr = null
@@ -217,7 +218,7 @@ VariableAccess: class extends Expression {
 
                     // in initialization of a member object!
                     if(!ref && name == "this" && trail find(Scope) == -1) {
-                        suggest(node as TypeDecl thisDecl)
+                       suggest(node as TypeDecl thisDecl)
                     }
                 }
                 node resolveAccess(this, res, trail)

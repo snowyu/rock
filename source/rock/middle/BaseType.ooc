@@ -4,7 +4,7 @@ import ../backend/cnaughty/AwesomeWriter, ../frontend/[BuildParams, Token]
 import tinker/[Response, Resolver, Trail, Errors]
 
 import Type, Declaration, VariableAccess, VariableDecl, TypeDecl,
-       InterfaceDecl, Node, ClassDecl, CoverDecl, Cast, FuncType,
+       InterfaceDecl, Node, StructDecl, ClassDecl, CoverDecl, Cast, FuncType,
        FunctionCall, Module, NamespaceDecl
 
 NumericState: enum {
@@ -76,7 +76,7 @@ BaseType: class extends Type {
         }
 
         w app(td underName())
-        if(td instanceOf?(ClassDecl)) {
+        if(td instanceOf?(ClassDecl) || td instanceOf?(StructDecl)) {
             w app('*')
         }
     }
@@ -256,12 +256,12 @@ BaseType: class extends Type {
             return scoreSeed / 2
         }
 
-        if(isPointer() && hisRef instanceOf?(ClassDecl)) {
+        if(isPointer() && (hisRef instanceOf?(ClassDecl) || hisRef instanceOf?(StructDecl))) {
             // objects are references in ooc
             return scoreSeed / 4
         }
 
-        if(ourRef instanceOf?(ClassDecl) && other isPointer()) {
+        if((ourRef instanceOf?(ClassDecl) || ourRef instanceOf?(StructDecl)) && other isPointer()) {
             // objects are still references in ooc
             return scoreSeed / 4
         }

@@ -6,7 +6,7 @@ import structs/[ArrayList, List, Stack, HashMap]
 import ../utils/FileUtils
 import ../frontend/[Token, BuildParams]
 import ../middle/tinker/Errors
-import ../middle/[FunctionDecl, VariableDecl, TypeDecl, ClassDecl, CoverDecl,
+import ../middle/[FunctionDecl, VariableDecl, TypeDecl, StructDecl, ClassDecl, CoverDecl,
     FunctionCall, StringLiteral, Node, Module, Statement, Include, Import,
     Type, TypeList, Expression, Return, VariableAccess, Cast, If, Else,
     ControlStatement, Comparison, IntLiteral, FloatLiteral, Ternary,
@@ -250,6 +250,39 @@ AstBuilder: class {
 
     onEnumEnd: unmangled(nq_onEnumEnd) func {
         pop(EnumDecl)
+    }
+
+    /*
+     * Structs
+     */
+
+    onStructStart: unmangled(nq_onStructStart) func (name, doc: CString) {
+        cDecl := StructDecl new(name toString(), token())
+        cDecl setVersion(getVersion())
+        cDecl doc = doc toString()
+        cDecl module = module
+        module addType(cDecl)
+        stack push(cDecl)
+    }
+
+    onStructExtends: unmangled(nq_onStructExtends) func (superType: Type) {
+        peek(StructDecl) setSuperType(superType)
+    }
+
+    onStructAbstract: unmangled(nq_onStructAbstract) func {
+        peek(StructDecl) isAbstract = true
+     }
+
+    onStructFinal: unmangled(nq_onStructFinal) func {
+        peek(StructDecl) isFinal = true
+    }
+
+    onStructBody: unmangled(nq_onStructBody) func {
+        //peek(StructDecl) addDefaultInit()
+    }
+
+    onStructEnd: unmangled(nq_onStructEnd) func {
+        pop(StructDecl)
     }
 
     /*
@@ -630,6 +663,14 @@ AstBuilder: class {
 
     onFunctionFinal: unmangled(nq_onFunctionFinal) func {
         peek(FunctionDecl) isFinal = true
+    }
+
+    onFunctionVirtual: unmangled(nq_onFunctionVirtual) func {
+        peek(FunctionDecl) isVirtual = true
+    }
+
+    onFunctionNonVirtual: unmangled(nq_onFunctionNonVirtual) func {
+        peek(FunctionDecl) isVirtual = false
     }
 
     onFunctionProto: unmangled(nq_onFunctionProto) func {

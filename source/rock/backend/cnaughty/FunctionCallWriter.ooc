@@ -1,7 +1,7 @@
 
 import ../../middle/[FunctionDecl, FunctionCall, TypeDecl, Argument,
         Type, Expression, InterfaceDecl, VariableAccess, VariableDecl,
-        ClassDecl, Dereference, StructLiteral]
+        StructDecl, ClassDecl, Dereference, StructLiteral]
 import Skeleton, FunctionDeclWriter, ModuleWriter
 
 FunctionCallWriter: abstract class extends Skeleton {
@@ -34,7 +34,8 @@ FunctionCallWriter: abstract class extends Skeleton {
                     acc := expr as VariableAccess
                     if(acc getRef() instanceOf?(VariableDecl)) {
                         vDecl := acc getRef() as VariableDecl
-                        arrow = vDecl getType() getRef() instanceOf?(ClassDecl)
+                        vDeclRef := vDecl getType() getRef()
+                        arrow = vDeclRef instanceOf?(ClassDecl) || vDeclRef instanceOf?(StructDecl)
                     }
                 }
                 current app(fCall expr). app(arrow ? "->" : ".")
