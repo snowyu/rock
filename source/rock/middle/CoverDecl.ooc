@@ -11,6 +11,9 @@ CoverDecl: class extends TypeDecl {
 
     init: func ~coverDeclNoSuper(.name, .token) {
         super(name, token)
+        if(!isMeta) {
+            meta isOutput = false
+        }
     }
 
     init: func ~coverDecl(.name, .superType, .token) {
