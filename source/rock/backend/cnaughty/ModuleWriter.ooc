@@ -188,7 +188,7 @@ ModuleWriter: abstract class extends Skeleton {
             if(tDecl getName() != fullName) {
                 if (tDecl isOutput)
                     hw nl(). app("#define "). app(tDecl getName()). app(' '). app(fullName)
-                if (tDecl isMeta && !tDecl getNonMeta() instanceOf?(StructDecl)) {
+                if (tDecl isMeta && !tDecl getNonMeta() instanceOf?(StructDecl) && !tDecl getNonMeta() instanceOf?(CoverDecl)) {
                     hw nl(). app("#define "). app(tDecl getName()). app("_class() "). app(fullName). app("_class()")
                 }
                 for(fDecl in tDecl getFunctions()) {

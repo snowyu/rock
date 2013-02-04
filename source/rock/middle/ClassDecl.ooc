@@ -78,7 +78,7 @@ ClassDecl: class extends TypeDecl {
                     addFunction(FunctionDecl new(This DEFAULTS_FUNC_NAME, token))
                 }
             }
-            if(getNonMeta() class == ClassDecl || getNonMeta() class == CoverDecl) {
+            if(getNonMeta() class == ClassDecl) {
                 if(!functions contains?(This LOAD_FUNC_NAME)) {
                     fDecl := FunctionDecl new(This LOAD_FUNC_NAME, token)
                     fDecl setStatic(true)
