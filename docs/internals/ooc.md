@@ -18,12 +18,51 @@ typedef struct {
 Point a;  //Static Object
 Point *b; //Dynamic Object
 
-
+void point_draw(Point* this) {}
 </pre>
 
 
 # OOC-Language
 
+<pre>
+Struct: abstract struct {
+    new: class func() -> Pointer {
+        result := calloc(sizeOf(this)) as this
+        return result
+    }
+    free: func() {
+        free(this)
+    }
+}
+
+Object: abstract struct {
+    init: virtual func() {}
+    new: class func() -> Pointer {
+        result := calloc(sizeOf(this)) as this
+        if (result init) result init()
+        return result
+    }
+    destroy: virtual func() {}
+    free: func() {
+        if (this destroy) this destroy()
+        free(this)
+    }
+}
+
+Point: struct {
+    x: Int
+    y: Int
+    draw: func {}
+}
+
+Line: struct extends Point {
+    endX: Int
+    endY: Int
+    draw: func ~withLine {}
+}
+
+aLine := Line new()
+</pre>
 
 
 
