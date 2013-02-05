@@ -102,6 +102,7 @@ TypeDecl: abstract class extends Declaration {
     }
 
     isAbstract: func -> Bool { false }
+    isPureAbstract: func -> Bool { false }
 
     init: func ~typeDecl (.name, .superType, .token) {
         init(name, token)
@@ -127,8 +128,15 @@ TypeDecl: abstract class extends Declaration {
     setSuperType: func(=superType) {
         if(!this isMeta && superType != null) {
             // TODO: there's probably a better way, but this works fine =)
-            if(superType getName() == "Object" && name != "Class") {
-                meta setSuperType(BaseType new("ClassClass", superType token))
+            if(!isPureAbstract()) {
+                if (superType getName() == "Object" && name != "Class") {
+                    meta setSuperType(BaseType new("ClassClass", superType token))
+                } else if (superType getName() == "Struct" && name != "Struct") {
+                    meta setSuperType(BaseType new("StructClass", superType token))
+                } else {
+                    namespace := (superType instanceOf?(BaseType)) ? superType as BaseType namespace : null
+                    meta setSuperType(BaseType new(superType getName() + "Class", namespace, superType token))
+                }
             } else {
                 namespace := (superType instanceOf?(BaseType)) ? superType as BaseType namespace : null
                 meta setSuperType(BaseType new(superType getName() + "Class", namespace, superType token))
@@ -144,6 +152,10 @@ TypeDecl: abstract class extends Declaration {
 
         variables put(typeArg getName(), typeArg)
         true
+    }
+
+    isStructClass: func -> Bool {
+        name equals?("Struct") || name equals?("StructClass")
     }
 
     isObjectClass: func -> Bool {

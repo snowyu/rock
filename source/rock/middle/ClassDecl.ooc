@@ -19,7 +19,7 @@ ClassDecl: class extends TypeDecl {
     DEFAULTS_FUNC_NAME  := static const "__defaults__"
     SIZEOF_FUNC_NAME    := static const "sizeOf"
 
-    //isPure := false
+    isPure := false
     isAbstract := false
     isFinal := false
     
@@ -40,7 +40,7 @@ ClassDecl: class extends TypeDecl {
     }
 
     isAbstract: func -> Bool { isAbstract }
-    //isPureAbstract: func -> Bool { isPure && isAbstract }
+    isPureAbstract: func -> Bool { isPure && isAbstract }
 
     byRef?: func -> Bool { false }
 

@@ -9,6 +9,7 @@ import tinker/[Response, Resolver, Trail, Errors]
 
 StructDecl: class extends TypeDecl {
 
+    isPure := false
     isAbstract := false
     isFinal := false
 
@@ -17,6 +18,10 @@ StructDecl: class extends TypeDecl {
         super(name, token)
         if(!isMeta) {
             meta isOutput = false
+        }
+        if(!isStructClass()&& !isPureAbstract()) {
+            // by default, everyone inherits from struct
+            setSuperType(BaseType new("Struct", token))
         }
 
     }
@@ -30,6 +35,7 @@ StructDecl: class extends TypeDecl {
     }
 
     isAbstract: func -> Bool { isAbstract }
+    isPureAbstract: func -> Bool { isPure && isAbstract }
 
     byRef?: func -> Bool { false }
 

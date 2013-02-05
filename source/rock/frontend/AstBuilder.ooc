@@ -269,6 +269,10 @@ AstBuilder: class {
         peek(StructDecl) setSuperType(superType)
     }
 
+    onStructPure: unmangled(nq_onStructPure) func {
+        peek(StructDecl) isPure = true
+     }
+
     onStructAbstract: unmangled(nq_onStructAbstract) func {
         peek(StructDecl) isAbstract = true
      }
@@ -304,6 +308,10 @@ AstBuilder: class {
 
     onClassImplements: unmangled(nq_onClassImplements) func (interfaceType: Type) {
         peek(ClassDecl) addInterface(interfaceType)
+    }
+
+    onClassPure: unmangled(nq_onClassPure) func {
+        peek(ClassDecl) isPure = true
     }
 
     onClassAbstract: unmangled(nq_onClassAbstract) func {
