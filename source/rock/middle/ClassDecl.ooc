@@ -254,6 +254,7 @@ ClassDecl: class extends TypeDecl {
     addInit: func(fDecl: FunctionDecl) {
 
         isCover := (getNonMeta() instanceOf?(CoverDecl))
+        isStruct := (getNonMeta() instanceOf?(StructDecl))
 
         if(defaultInit != null) {
             /*
@@ -287,12 +288,12 @@ ClassDecl: class extends TypeDecl {
         newTypeAccess setRef(getNonMeta())
 
         vdfe : VariableDecl = null
-        if(!isCover) {
+        if(isCover || isStruct) {
+            vdfe = VariableDecl new(newType clone(), "this", fDecl token)
+        } else {
             allocCall := FunctionCall new(newTypeAccess, "alloc", fDecl token)
             expr := Cast new(allocCall, newType, fDecl token)
             vdfe = VariableDecl new(null, "this", expr, fDecl token)
-        } else {
-            vdfe = VariableDecl new(newType clone(), "this", fDecl token)
         }
         constructor getBody() add(vdfe)
 

@@ -88,6 +88,14 @@ StructDecl: class extends TypeDecl {
 
     replace: func (oldie, kiddo: Node) -> Bool { false }
 
+    addDefaultInit: func {
+
+        if(!isMeta) {
+            getMeta() addDefaultInit()
+            return
+        }
+    }
+
 /*
     addFunction: func (fDecl: FunctionDecl) {
 

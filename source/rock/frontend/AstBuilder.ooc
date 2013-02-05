@@ -282,7 +282,7 @@ AstBuilder: class {
     }
 
     onStructBody: unmangled(nq_onStructBody) func {
-        //peek(StructDecl) addDefaultInit()
+        peek(StructDecl) addDefaultInit() //add the "new" method  for "aDog := Dog new()"
     }
 
     onStructEnd: unmangled(nq_onStructEnd) func {
