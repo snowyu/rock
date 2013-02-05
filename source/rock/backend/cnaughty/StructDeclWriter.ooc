@@ -32,7 +32,6 @@ StructDeclWriter: abstract class extends Skeleton {
 
         current nl(). app("struct _"). app(cDecl underName()). app(' '). openBlock()
 
-        cDecl getSuperRef() name println()
         if (cDecl getSuperRef() != null && cDecl getSuperRef() name != "Object") {
             current nl(). app("struct _"). app(cDecl getSuperRef() underName()). app(" __super__;")
         }
