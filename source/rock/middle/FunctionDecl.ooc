@@ -65,6 +65,7 @@ FunctionDecl: class extends Declaration {
     isProto := false
     isSuper := false
     isVirtual := true
+    isOutput := true
     externName : String = null
     unmangledName: String = null
 
