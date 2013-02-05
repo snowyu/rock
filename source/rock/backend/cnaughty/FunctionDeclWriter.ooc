@@ -16,6 +16,8 @@ FunctionDeclWriter: abstract class extends Skeleton {
     write: static func ~function (this: Skeleton, fDecl: FunctionDecl) {
         //"|| Writing function %s" format(fDecl name) println()
 
+        if (!fDecl isOutput) return
+
         if(!fDecl isExtern() || fDecl isProto()) {
 
             // header

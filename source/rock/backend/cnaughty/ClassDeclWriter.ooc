@@ -127,6 +127,8 @@ ClassDeclWriter: abstract class extends Skeleton {
 
         for(fDecl: FunctionDecl in cDecl functions) {
 
+            if (!fDecl isOutput) continue
+
             if(fDecl isExtern()) {
                 // write the #define
                 FunctionDeclWriter write(this, fDecl)
@@ -154,7 +156,7 @@ ClassDeclWriter: abstract class extends Skeleton {
 
         for (decl: FunctionDecl in cDecl functions) {
 
-            if (!decl isStatic() || decl isProto() || decl isAbstract()) continue
+            if (!decl isOutput || !decl isStatic() || decl isProto() || decl isAbstract()) continue
 
             if(decl isExternWithName()) {
                 FunctionDeclWriter write(this, decl)
@@ -192,6 +194,7 @@ ClassDeclWriter: abstract class extends Skeleton {
     writeInstanceVirtualFuncs: static func (this: Skeleton, cDecl: ClassDecl) {
 
         for(fDecl: FunctionDecl in cDecl functions) {
+            if (!fDecl isOutput) continue
 
             if (!fDecl isVirtual() || fDecl isStatic() || fDecl isFinal() || fDecl isExternWithName()) {
                 continue
@@ -221,7 +224,7 @@ ClassDeclWriter: abstract class extends Skeleton {
 
         // Non-static (ie  instance) functions
         for (decl: FunctionDecl in cDecl functions) {
-            if (decl isStatic() || decl isAbstract() || decl isExternWithName()) {
+            if (decl isStatic() || decl isAbstract() || decl isExternWithName() || !decl isOutput) {
                 continue
             }
 

@@ -4,15 +4,22 @@ import ../io/TabbedWriter
 import ../frontend/Token
 import Expression, Type, Visitor, TypeDecl, Cast, FunctionCall, FunctionDecl,
        Module, Node, VariableDecl, VariableAccess, BinaryOp, Argument,
-       Return, CoverDecl, BaseType
+       Return, CoverDecl, BaseType, StructDecl
 import tinker/[Response, Resolver, Trail, Errors]
+
+intType := BaseType new("int", nullToken)
+intType ref = BuiltinType new("int", nullToken)
+
+
 
 ClassDecl: class extends TypeDecl {
 
     DESTROY_FUNC_NAME   := static const "__destroy__"
     LOAD_FUNC_NAME      := static const "__load__"
     DEFAULTS_FUNC_NAME  := static const "__defaults__"
+    SIZEOF_FUNC_NAME    := static const "sizeOf"
 
+    //isPure := false
     isAbstract := false
     isFinal := false
     
@@ -33,6 +40,7 @@ ClassDecl: class extends TypeDecl {
     }
 
     isAbstract: func -> Bool { isAbstract }
+    //isPureAbstract: func -> Bool { isPure && isAbstract }
 
     byRef?: func -> Bool { false }
 
@@ -73,18 +81,21 @@ ClassDecl: class extends TypeDecl {
         }
 
         if(isMeta) {
-            if(getNonMeta() class == ClassDecl) {
+            obj := getNonMeta()
+            if(obj class == ClassDecl) {
                 if(!functions contains?(This DEFAULTS_FUNC_NAME)) {
-                    addFunction(FunctionDecl new(This DEFAULTS_FUNC_NAME, token))
+                    fDecl := FunctionDecl new(This DEFAULTS_FUNC_NAME, token)
+                    fDecl isOutput = false
+                    addFunction(fDecl)
                 }
-            }
-            if(getNonMeta() class == ClassDecl) {
                 if(!functions contains?(This LOAD_FUNC_NAME)) {
                     fDecl := FunctionDecl new(This LOAD_FUNC_NAME, token)
+                    fDecl isOutput = false
                     fDecl setStatic(true)
                     addFunction(fDecl)
                 }
             }
+
         }
 
         {
@@ -109,6 +120,7 @@ ClassDecl: class extends TypeDecl {
         fDecl := meat functions get(This LOAD_FUNC_NAME)
         if(fDecl == null) {
             fDecl = FunctionDecl new(This LOAD_FUNC_NAME, token)
+            fDecl isOutput = false
             addFunction(fDecl)
         }
         return fDecl
@@ -120,6 +132,7 @@ ClassDecl: class extends TypeDecl {
         fDecl := meat functions get(This DEFAULTS_FUNC_NAME)
         if(fDecl == null) {
             fDecl = FunctionDecl new(This DEFAULTS_FUNC_NAME, token)
+            fDecl isOutput = false
             addFunction(fDecl)
         }
         return fDecl
