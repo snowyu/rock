@@ -24,6 +24,12 @@ void point_draw(Point* this) {}
 
 # OOC-Language
 
+修改OOC
+
+目前没有区分 struct && struct*
+所有struct都认为是pointer。
+
+
 <pre>
 Struct: abstract struct {
     new: class func() -> Pointer {
@@ -63,7 +69,6 @@ Line: struct extends Point {
 
 aLine := Line new()
 </pre>
-
 
 
 [Object-oriented design patterns in the kernel, part 1]:http://lwn.net/Articles/444910/

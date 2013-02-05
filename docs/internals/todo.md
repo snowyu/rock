@@ -102,6 +102,25 @@ writeMemberFuncPrototypes(ClassDeclWriter): 写该类所有的函数名头.一�
 
 CoverDecl 的实现也是 Class，所以定义的所有导入都有ClassClass的东东，很烦，要改！
 
+当发现lang/types中的Class类，就用其作为class的方法属性。 参阅 TypeDecl setSuperType()
+以及 TypeDecl init~typeDeclNoSuper()
+
+    setSuperType: func(=superType) {
+        if(!this isMeta && superType != null) {
+            // TODO: there's probably a better way, but this works fine =)
+            if(superType getName() == "Object" && name != "Class" && !isPureAbstract) {
+                //其父类为Object，但是自己并不是"Class"的时候,为普通根类，所以强制
+                //设置其meta的超类为ClassClass, 我要修改为纯抽象根类不强制设置为ClassClass
+                meta setSuperType(BaseType new("ClassClass", superType token))
+            } else {
+                namespace := (superType instanceOf?(BaseType)) ? superType as BaseType namespace : null
+                meta setSuperType(BaseType new(superType getName() + "Class", namespace, superType token))
+            }
+        }
+    }
+
++ pure keyword for pure abstract class.
+
 TypeDecl.ooc
 
 <code>
