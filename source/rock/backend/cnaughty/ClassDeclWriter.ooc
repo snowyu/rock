@@ -42,7 +42,7 @@ ClassDeclWriter: abstract class extends Skeleton {
 
             // don't write class-getting functions of extern covers - it hurts
             if(cDecl getNonMeta() == null || !cDecl getNonMeta() instanceOf?(CoverDecl) || !(cDecl getNonMeta() as CoverDecl isExtern() || cDecl getNonMeta() as CoverDecl isAddon())) {
-                writeClassGettingFunction(this, cDecl)
+               //writeClassGettingFunction(this, cDecl)
             }
 
             if(cDecl getVersion()) VersionWriter writeEnd(this)
