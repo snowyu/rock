@@ -15,6 +15,27 @@ FunctionCallWriter: abstract class extends Skeleton {
         }
         fDecl : FunctionDecl = fCall ref
 
+        if(fCall expr) {
+            fObj : TypeDecl
+            fObj = fCall expr getType() getRef()
+            if (fObj isMeta) fObj = fObj getNonMeta()
+            if (fCall getName() == "sizeOf") {
+                if (fObj instanceOf?(StructDecl)) {
+                    fObj as StructDecl writeSize(current, true)
+                    return
+                }
+                if (fObj instanceOf?(ClassDecl)) {
+                    fObj as ClassDecl writeSize(current, true)
+                    return
+                }
+            } else if (fCall getName() == "new" && fObj instanceOf?(StructDecl)) {
+                current app("lang_memory__gc_malloc(")
+                fObj as StructDecl writeSize(current, true)
+                current app(")")
+                return
+            }
+        }
+
         shouldCastThis := false
 
         // write the function name
