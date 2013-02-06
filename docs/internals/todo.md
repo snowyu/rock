@@ -121,6 +121,43 @@ CoverDecl 的实现也是 Class，所以定义的所有导入都有ClassClass的
 
 + pure keyword for pure abstract class.
 
+如何在编译器中增加一个函数，可以参考 ClassDecl.ooc:
+中的"new" 方法。
+
+我现在用的直接替换法，没有实际用其中的内容，当在FunctionCall的
+时候，直接替换的方式来实现，简单的使用了gc_malloc来的。
+
+但是在new中还需要做一些初始化操作，这样就不妥了。
+
+可以定义一个魔术的alloc方法只分配内存，这个可以用替换法子。
+
+struct new还有一个问题，因为struct 没有ClassVMT表，所以作为
+特殊的类方法，就无法传入指明要创建的类指针。只能在编译时刻处理。
+
+这导致我在rtl库中写new方法指明返回的类型蛮烦，如果返回的是struct
+那么，编译器就看不到继承类的属性：这里的麻烦主要是指 ":=" 操作。
+该操作无需指明类型就可以申请一个变量。rock的做法是为每一个Object
+类内部创建一个"new"方法(如果没有创建)，返回对应的值类型。这样导致
+占用不必要的代码空间。我现在是fake方法的形式。
+
+算了，还是准备用 new 作为分配内存的东西，还是按Delphi的习惯
+增加 Create 作为类的Constructor
+
+对于 Struct.Create() 编译要做两件事情：
+1. 分配内存    new()
+2. 设置默认值  init()
+   * 为空c字符串设置NullPtr
+
+如果没有Create重载，那么就创建一个不输出的Create(isOutput=false)
+然后在FunctionCall的时候...不好办！算了，还是不要 ":=" 方便。
+
+我想改用Pascal语法了。很简单，改改../nagaqueen/grammar/nagaqueen.leg 即可。
+
+
+    AstBuilder -> Create Abstract Syntax Tree -> 
+    Tinkerer Process(): Resolve all modules with the help of Resolver, by looping as many times as needed.
+
+
 TypeDecl.ooc
 
 <code>
