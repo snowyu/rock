@@ -94,8 +94,20 @@ ClassDecl: class extends TypeDecl {
                     fDecl setStatic(true)
                     addFunction(fDecl)
                 }
+            } else if(obj class == StructDecl && obj getName() == "Struct") {
+                if(!functions contains?(This SIZEOF_FUNC_NAME)) {
+                    fDecl := FunctionDecl new(This SIZEOF_FUNC_NAME, token)
+                    fDecl isOutput = false
+                    fDecl returnType = intType
+                    vBody := fDecl getBody()
+                    vdfe := VariableDecl new(intType clone(), "result", fDecl token)
+                    vBody add(vdfe)
+                    varAccess := VariableAccess new(vdfe, fDecl token)
+                    varAccess setRef(vdfe)
+                    vBody add(Return new(varAccess, fDecl token))
+                    addFunction(fDecl)
+                }
             }
-
         }
 
         {
@@ -211,6 +223,7 @@ ClassDecl: class extends TypeDecl {
              * though, see addInit()
              */
             init := FunctionDecl new("init", token)
+            init isOutput = false
             addFunction(init)
 
             // TODO: check if the super-type actually has a no-arg constructor, throw an error if not
@@ -274,6 +287,7 @@ ClassDecl: class extends TypeDecl {
         newType := isMeta ? getNonMeta() getInstanceType() as BaseType : getInstanceType() as BaseType
 
         constructor := FunctionDecl new("new", fDecl token)
+        constructor isOutput = false
         constructor setStatic(true)
         constructor setSuffix(fDecl getSuffix())
         retType := newType clone() as BaseType

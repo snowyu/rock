@@ -67,6 +67,7 @@ StructDeclWriter: abstract class extends Skeleton {
         //writeClassGettingPrototype(this, cDecl)
 
         for(fDecl: FunctionDecl in cDecl functions) {
+            if (!fDecl isOutput) continue
             if(fDecl isExtern()) {
                 // write the #define
                 FunctionDeclWriter write(this, fDecl)
@@ -89,7 +90,7 @@ StructDeclWriter: abstract class extends Skeleton {
 
         for (decl: FunctionDecl in cDecl functions) {
 
-            if (!decl isStatic() || decl isProto() || decl isAbstract()) continue
+            if (!decl isOutput || !decl isStatic() || decl isProto() || decl isAbstract()) continue
 
             if(decl isExternWithName()) {
                 FunctionDeclWriter write(this, decl)
@@ -98,7 +99,6 @@ StructDeclWriter: abstract class extends Skeleton {
 
             current = cw
             current nl()
-            current app("//writeStaticFuncs:")
             FunctionDeclWriter writeFuncPrototype(this, decl);
 
             current app(' '). openBlock(). nl()
@@ -115,12 +115,11 @@ StructDeclWriter: abstract class extends Skeleton {
 
         // Non-static (ie  instance) functions
         for (decl: FunctionDecl in cDecl functions) {
-            if (decl isStatic() || decl isAbstract() || decl isExternWithName()) {
+            if (!decl isOutput || decl isStatic() || decl isAbstract() || decl isExternWithName()) {
                 continue
             }
 
             current nl(). nl()
-            current app("//writeInstanceImplFuncs:"). nl()
             FunctionDeclWriter writeFuncPrototype(this, decl, null)
             current app(' '). openBlock()
             
