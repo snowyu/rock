@@ -1,8 +1,8 @@
 import io/[File], os/[Terminal, Process]
 import structs/[List, ArrayList, HashMap]
-import ../[BuildParams, Target]
+import ../[BuildParams, Target, Token]
 import ../compilers/AbstractCompiler
-import ../../middle/[Module, UseDef]
+import ../../middle/[Module, Include, UseDef]
 import ../../backend/cnaughty/CGenerator
 import Driver, Archive
 
@@ -466,6 +466,35 @@ SequenceDriver: class extends Driver {
                 toCompile put(name, sourceFolder)
             }
             sourceFolder modules add(module)
+            for(inc: Include in module includes) {
+                if(inc mode == IncludeModes LOCAL) {
+                    vModulePath := File new(module path) parentName()
+
+                    destPath := params outPath path + File separator + vModulePath
+
+                    vPath := module path + ".ooc"
+                    vPathElement := params sourcePath getFile(vPath) parent()
+
+                    vCFile := File new(vPathElement, inc path + ".c")
+                    if (vCFile exists?()) {
+                        vPath := inc path
+                        if (vModulePath) vPath = vModulePath + File separator + vPath
+                        vIncModule := Module new(vPath, module pathElement, params, nullToken)
+                        vIncModule isCModule= true
+                        //for list contains? not work!
+                        vFound := false
+                        for(i: Module in sourceFolder modules) {
+                            if (i fullName == vPath && i isCModule == true) {
+                                vFound = true;
+                                break;
+                            }
+                        }
+                        if (!vFound) {
+                            sourceFolder modules add(vIncModule)
+                        }
+                    }
+                }
+            }
         }
         done add(module)
 
@@ -473,6 +502,7 @@ SequenceDriver: class extends Driver {
             if(done contains?(import1 getModule())) continue
             collectDeps(import1 getModule(), toCompile, done)
         }
+
 
         return toCompile
 

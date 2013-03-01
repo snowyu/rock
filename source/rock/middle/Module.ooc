@@ -9,6 +9,7 @@ import tinker/[Response, Resolver, Trail, Errors]
 
 Module: class extends Node {
 
+    isCModule := false //just reference a .c file
     // statistics house-keeping
     timesImported := 0
     timesLooped := 0
@@ -84,6 +85,34 @@ Module: class extends Node {
 
     _collectDeps: func (list: List<Module>) -> List<Module> {
         list add(this)
+        for(inc: Include in includes) {
+            if(inc mode == IncludeModes LOCAL) {
+                vModulePath := File new(this path) parentName()
+
+                destPath := params outPath path + File separator + vModulePath
+                vPath := this path + ".ooc"
+                vPathElement := params sourcePath getFile(vPath) parent()
+
+                vCFile := File new(vPathElement, inc path + ".c")
+                if (vCFile exists?()) {
+                    vPath := inc path
+                    if (vModulePath) vPath = vModulePath + File separator + vPath
+                    vIncModule := Module new(vPath, this pathElement, params, nullToken)
+                    vIncModule isCModule= true
+                    //for list contains? not work!
+                    vFound := false
+                    for(i: Module in list) {
+                        if (i fullName == vPath && i isCModule == true) {
+                            vFound = true;
+                            break;
+                        }
+                    }
+                    if (!vFound) {
+                        list add(vIncModule)
+                    }
+                }
+            }
+        }
         for(imp in getAllImports()) {
             if(imp getModule() == null) continue // what can we do about it? nothing.
             if(!list contains?(imp getModule())) {

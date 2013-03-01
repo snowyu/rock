@@ -30,15 +30,23 @@ Driver: abstract class {
 
         for(inc: Include in module includes) {
             if(inc mode == IncludeModes LOCAL) {
+                vModulePath := File new(module getSourceFolderName(), module path) parentName()
+
+                //destPath := params outPath path + File separator + vModulePath
                 destPath := (params libcache) ? \
-                    params libcachePath + File separator + module getSourceFolderName() : \
-                    params outPath path
+                    params libcachePath + File separator + module getSourceFolderName(): \
+                    params outPath path + File separator + vModulePath
 
                 path := module path + ".ooc"
                 pathElement := params sourcePath getFile(path) parent()
 
                 File new(pathElement, inc path + ".h") copyTo(
                 File new(destPath,    inc path + ".h"))
+                vCFile := File new(pathElement, inc path + ".c")
+                if (vCFile exists?()) {
+                    destPath = params outPath path + File separator + vModulePath
+                    vCFile copyTo(File new(destPath, inc path + ".c"))
+                }
             }
         }
 

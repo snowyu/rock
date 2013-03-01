@@ -187,8 +187,12 @@ MakeDriver: class extends SequenceDriver {
 
             fW write(oPath). write(": ").
                write(cPath). write(" ").
-               write(path). write(".h ").
-               write(path). write("-fwd.h\n")
+               write(path). write(".h ")
+            if (!currentModule isCModule) {
+                fW write(path). write("-fwd.h")
+            }
+            fW write("\n")
+
 
             fW write("\t${CC} ${CFLAGS} -c %s -o %s\n" format(cPath, oPath))
         }
