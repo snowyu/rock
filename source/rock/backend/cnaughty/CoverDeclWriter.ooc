@@ -5,7 +5,7 @@ import Skeleton, FunctionDeclWriter, TypeWriter, ClassDeclWriter, VersionWriter,
 CoverDeclWriter: abstract class extends Skeleton {
 
     write: static func ~_cover (this: Skeleton, cDecl: CoverDecl) {
-
+        //"|| write Cover: %s" printfln(cDecl toString())
         current = hw
 
         // addons only add functions to an already imported cover, so
@@ -14,7 +14,8 @@ CoverDeclWriter: abstract class extends Skeleton {
             writeGuts(this, cDecl)
         }
 
-        for(fDecl in cDecl functions) {
+        for(fDecl in cDecl meta functions) {
+            //"     write Cover func: %s" printfln(fDecl toString())
             fDecl accept(this)
             current nl()
         }

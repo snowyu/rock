@@ -123,7 +123,9 @@ lang_Numbers__Int main() {
 
 
 产生的C语言利用宏定义和名称前缀的形式来避免重名，看上去总觉得不顺眼，不过为了避免
-在大项目中名称冲突，这算是一种解决方案，该想一种更漂亮的方案。
+在大项目中名称冲突，这算是一种解决方案，但不是很漂亮，也许该想一种更漂亮的方案。
+
+
 
 <code>
 //come from memory-fwd.h
@@ -141,6 +143,9 @@ lang_types__Pointer lang_memory__gc_malloc(lang_Numbers__SizeT size);
 ....
 </code>
 
+
+
+___________________________________________
 烦于每次都要在C语言中输入同样的模式。
 
 一直在寻找能用于建立C语言的对象（类）复用体系架构的框架或工具，我需要能通过该工具或框架搭建：
@@ -189,6 +194,10 @@ void point_draw(Point* this) {}
 
     OOC=bin/c_rock ROCK_DIST=. make self
 
+* [Bug] the cover can not export the funcs:
+  because I has disabled the meta output.
+  the funcs are added on the meta(ClassDecl).
+  TODO: I need refactor the meta ClassDecl!!!
 + use the c file if exists when include local head file
   * see the Module.ooc(\_collectDeps func), Driver.ooc(copyLocalHeaders func)
   * the SequenceDriver.ooc(collectDeps func) modified too but not work on(Macos, ralib things)!
